@@ -84,7 +84,18 @@
       // The main difference from fetchOne() will be the URL you request from; check
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchAll() {
-        // TODO
+        document.getElementById("recordForm").style.display = "none";
+        var endpointURL = document.getElementById("endpoint").value;
+        fetch(endpointURL)
+          .then(response => response.json())
+          .then(data => {
+            var pElement = document.createElement("p");
+            pElement.innerText = JSON.stringify(data);
+
+            var outputElement = document.getElementById("output");
+            outputElement.innerHTML = ""; //erase all children
+            outputElement.appendChild(pElement);
+          });
       }
 
       // This function should fetch one entry from the given endpoint.
@@ -92,23 +103,114 @@
       // The main difference from fetchAll() will be the URL you request from; check
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchOne() {
-        // TODO
+        document.getElementById("recordForm").style.display = "none";
+        var id = window.prompt("Enter record id");
+        var endpointURL = (document.getElementById("endpoint").value) + "/" + id;
+        fetch(endpointURL)
+          .then(response => response.json())
+          .then(data => {
+            var pElement = document.createElement("p");
+            pElement.innerText = JSON.stringify(data);
+            if(pElement.innerText == "{}")
+              pElement.innerText = "Network Error: 404"
+
+            var outputElement = document.getElementById("output");
+            outputElement.innerHTML = ""; //erase all children
+            outputElement.appendChild(pElement);
+          });
       }
 
       // This function should use fetch to create one entry in the given endpoint.
       // From the 4 CRUD actions, this is the CREATE action, and uses the POST http method.
       // The main difference from updateRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
-      function createRecord() {
-        // TODO
+      function createRecord(type) {
+        var authorForm = document.getElementById("author");
+        var titleForm = document.getElementById("title");
+        if(type == "show") {
+          //show the form and flush input fields
+          authorForm.value = "";
+          titleForm.value = "";
+          document.getElementById("recordForm").style.display = "block";
+          document.getElementById("recordIDcontainer").style.display = "none";
+        }
+        else {
+          var userAuthor = authorForm.value;
+          var userTitle = titleForm.value;
+
+          var userInput = {
+            "title": userTitle,
+            "author": userAuthor,
+          };
+
+          var endpointURL = document.getElementById("endpoint").value;
+          fetch(endpointURL, {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userInput),
+          })
+          .then(response => response.json())
+          .then(data => {
+            var pElement = document.createElement("p");
+            pElement.innerText = JSON.stringify(data);
+
+            var outputElement = document.getElementById("output");
+            outputElement.innerHTML = ""; //erase all children
+            outputElement.appendChild(pElement);
+          });
+        }
       }
 
       // This function should use fetch to update one existing entry in the given endpoint.
       // From the 4 CRUD actions, this is the UPDATE action, and uses the PUT http method.
       // The main difference from createRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
-      function updateRecord() {
-        // TODO
+      function updateRecord(type) {
+        var authorForm = document.getElementById("author");
+        var titleForm = document.getElementById("title");
+        var idForm = document.getElementById("recordID");
+        if(type == "show") {
+          //show the form and flush input fields
+          authorForm.value = "";
+          titleForm.value = "";
+          idForm.value = "";
+          document.getElementById("recordForm").style.display = "block";
+          document.getElementById("recordIDcontainer").style.display = "block";
+        }
+        else {
+          var userAuthor = authorForm.value;
+          var userTitle = titleForm.value;
+          var id = idForm.value;
+
+          var userInput = {
+            "title": userTitle,
+            "author": userAuthor,
+            "id": id
+          };
+
+          var endpointURL = (document.getElementById("endpoint").value) + "/" + id;
+          fetch(endpointURL, {
+            method: "PUT",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userInput),
+          })
+          .then(response => response.json())
+          .then(data => {
+            var pElement = document.createElement("p");
+            pElement.innerText = JSON.stringify(data);
+
+            if(pElement.innerText == "{}")
+              pElement.innerText = "Network Error: 404"
+
+            var outputElement = document.getElementById("output");
+            outputElement.innerHTML = ""; //erase all children
+            outputElement.appendChild(pElement);
+          });
+        }
       }
 
       // This function should use fetch to delete one existing entry in the given endpoint.
@@ -117,7 +219,25 @@
       // request; check the writeup to view the URL pattern for get one and delete. THERE IS NO 
       // delete all, only delete one.
       function deleteRecord() {
-        // TODO
+        document.getElementById("recordForm").style.display = "none";
+        var id = window.prompt("Enter record id");
+        var endpointURL = (document.getElementById("endpoint").value) + "/" + id;
+        fetch(endpointURL, {
+            method: "DELETE",
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          })
+          .then(response => {
+            var pElement = document.createElement("p");
+            pElement.innerText = JSON.stringify(response.json());
+            if(response.status == 404)
+              pElement.innerText = "Network Error: 404";
+
+            var outputElement = document.getElementById("output");
+            outputElement.innerHTML = ""; //erase all children
+            outputElement.appendChild(pElement);
+          });
       }
 
       window.addEventListener('DOMContentLoaded', () => {
